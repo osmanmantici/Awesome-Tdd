@@ -1,6 +1,8 @@
 package com.osmantici.awesometdd.services;
 
 import com.osmantici.awesometdd.dtos.OrderDto;
+import com.osmantici.awesometdd.models.Order;
+import com.osmantici.awesometdd.repositories.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,10 +13,13 @@ import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.BDDAssertions.then;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 public class OrderServiceTests {
 
     private OrderService orderService;
+    private OrderRepository orderRepository;
 
     @BeforeEach
     public void beforeEach(){
@@ -43,5 +48,31 @@ public class OrderServiceTests {
 
         //then
         then(order.getTotalPrice()).isEqualTo(totalPrice);
+    }
+
+    @ParameterizedTest
+    @MethodSource("order_requests") // method source içinde ne kadar varsa o kadar çalışacak
+    public void it_should_create_orders_and_save(String productCode, Integer amount, BigDecimal unitPrice, BigDecimal totalPrice){
+        // given
+        CreateOrderRequest request = CreateOrderRequest.builder()
+                .productCode(productCode)
+                .unitPrice(unitPrice)
+                .amount(amount)
+                .build();
+
+        Order order = new Order();
+
+        when(orderRepository.save(any())).thenReturn(order); // order repository'de save()'i herhangi bir şey ile çağırdığında order dönecek diyoruz
+
+        //when
+        OrderDto orderDto = orderService.createOrder(request);
+
+        //then
+        then(orderDto.getTotalPrice()).isEqualTo(totalPrice);
+    }
+
+    @Test
+    public void it_should_fail_order_creation_when_payment_failed(){
+
     }
 }
