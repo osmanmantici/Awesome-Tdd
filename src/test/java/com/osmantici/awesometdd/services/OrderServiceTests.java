@@ -66,6 +66,7 @@ public class OrderServiceTests {
                 .build();
 
         Order order = new Order();
+        order.setId(12312313);
 
         when(orderRepository.save(any())).thenReturn(order); // order repository'de save()'i herhangi bir şey ile çağırdığında order dönecek diyoruz
 

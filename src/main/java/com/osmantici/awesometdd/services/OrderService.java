@@ -1,6 +1,7 @@
 package com.osmantici.awesometdd.services;
 
 import com.osmantici.awesometdd.dtos.OrderDto;
+import com.osmantici.awesometdd.models.Order;
 import com.osmantici.awesometdd.repositories.OrderRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +17,14 @@ public class OrderService {
     }
 
     public OrderDto createOrder(CreateOrderRequest request) {
-//        return new OrderDto();
         BigDecimal totalPrice = request.getUnitPrice().multiply(BigDecimal.valueOf(request.getAmount()));
-        return OrderDto.builder().totalPrice(totalPrice).build();
+        Order order = Order.builder()
+                .totalPrice(totalPrice)
+                .build();
+        Order save = this.orderRepository.save(order);
+        return OrderDto.builder()
+                .totalPrice(totalPrice)
+                .id(save.getId())
+                .build();
     }
 }
