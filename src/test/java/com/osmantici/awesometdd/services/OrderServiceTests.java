@@ -30,4 +30,26 @@ public class OrderServiceTests {
         // Assert Equal diye de olabiliyormuş ??
         then(order.getTotalPrice()).isEqualTo(BigDecimal.valueOf(61.5));
     }
+
+
+    @Test
+    public void it_should_create_order_with_10_items(){
+        //given
+        OrderService service = new OrderService(); // is this given to us
+        CreateOrderRequest request = CreateOrderRequest.builder()
+                .productCode("code1")
+                .amount(10)
+//                .unitPrice(BigDecimal.ONE)
+                .unitPrice(BigDecimal.valueOf(15))
+                .build();
+
+
+        //when
+        OrderDto order = service.createOrder(request);
+
+        //then
+        then(order).isNotNull(); // this is an assertion
+        // Assert Equal diye de olabiliyormuş ??
+        then(order.getTotalPrice()).isEqualTo(BigDecimal.valueOf(150));
+    }
 }
