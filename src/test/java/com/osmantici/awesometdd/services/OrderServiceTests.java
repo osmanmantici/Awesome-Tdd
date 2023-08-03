@@ -5,26 +5,31 @@ import com.osmantici.awesometdd.models.Order;
 import com.osmantici.awesometdd.repositories.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class OrderServiceTests {
 
-    private OrderService orderService;
+    // InjectMocks dediğimizde OrderService içerisinde ne kadar Dependency Injection varsa ve onlar hemen aşağıda @Mock ile verilmişse kendi injection'unu yapıyor.
+    @Mock
     private OrderRepository orderRepository;
+    @InjectMocks
+    private OrderService orderService;
 
-    @BeforeEach
-    public void beforeEach(){
-        orderService = new OrderService();
-    }
 
     public static Stream<Arguments> order_requests() {
         return Stream.of(

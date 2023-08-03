@@ -1,6 +1,8 @@
 package com.osmantici.awesometdd.repositories;
 
-public interface OrderRepository {
+import com.osmantici.awesometdd.models.Order;
+import org.springframework.data.repository.CrudRepository;
 
-    Object save(Object any);
+public interface OrderRepository extends CrudRepository<Order, Integer> {
+
 }
