@@ -8,6 +8,7 @@ public class OrderService {
 
     public OrderDto createOrder(CreateOrderRequest request) {
 //        return new OrderDto();
-        return OrderDto.builder().totalPrice(BigDecimal.valueOf(61.5)).build();
+        BigDecimal totalPrice = request.getUnitPrice().multiply(BigDecimal.valueOf(request.getAmount()));
+        return OrderDto.builder().totalPrice(totalPrice).build();
     }
 }
