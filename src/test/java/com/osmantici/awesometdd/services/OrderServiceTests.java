@@ -1,5 +1,6 @@
 package com.osmantici.awesometdd.services;
 
+import com.osmantici.awesometdd.clients.PaymentClient;
 import com.osmantici.awesometdd.dtos.OrderDto;
 import com.osmantici.awesometdd.models.Order;
 import com.osmantici.awesometdd.repositories.OrderRepository;
@@ -16,20 +17,23 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.BDDAssertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceTests {
 
     // InjectMocks dediğimizde OrderService içerisinde ne kadar Dependency Injection varsa ve onlar hemen aşağıda @Mock ile verilmişse kendi injection'unu yapıyor.
-    @Mock
-    private OrderRepository orderRepository;
     @InjectMocks
     private OrderService orderService;
 
+    @Mock
+    private OrderRepository orderRepository;
+    @Mock
+    private PaymentClient paymentClient;
 
     public static Stream<Arguments> order_requests() {
         return Stream.of(
@@ -79,6 +83,22 @@ public class OrderServiceTests {
 
     @Test
     public void it_should_fail_order_creation_when_payment_failed(){
+        // given
+        CreateOrderRequest request = CreateOrderRequest.builder()
+                .productCode("code1")
+                .unitPrice(BigDecimal.valueOf(12))
+                .amount(3)
+                .build();
 
+        doThrow(new IllegalArgumentException()).when(paymentClient).pay(any());
+
+
+        //when
+        Throwable throwable = catchThrowable(() -> {
+            orderService.createOrder(request);
+        });
+
+        then(throwable).isInstanceOf(IllegalArgumentException.class);
+        verifyNoInteractions(orderRepository);
     }
 }
