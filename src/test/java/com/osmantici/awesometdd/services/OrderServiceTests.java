@@ -4,7 +4,6 @@ import com.osmantici.awesometdd.clients.PaymentClient;
 import com.osmantici.awesometdd.dtos.OrderDto;
 import com.osmantici.awesometdd.models.Order;
 import com.osmantici.awesometdd.repositories.OrderRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,7 +19,6 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.BDDAssertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -90,15 +88,16 @@ public class OrderServiceTests {
                 .amount(3)
                 .build();
 
-        doThrow(new IllegalArgumentException()).when(paymentClient).pay(any());
+        // paymentClient'ın pay() methodunu çağırdığın zaman IllegalArgEx fırlatacak diyoruz
+        doThrow(new IllegalArgumentException()).when(paymentClient).pay(any()); // void method olduğu için doThrow
 
-
-        //when
+        // when
         Throwable throwable = catchThrowable(() -> {
             orderService.createOrder(request);
         });
 
+        // then
         then(throwable).isInstanceOf(IllegalArgumentException.class);
-        verifyNoInteractions(orderRepository);
+        verifyNoInteractions(orderRepository); // paymentClient fail olursa OrderRepository'nin save() methodunu hiç çağırmasın
     }
 }
